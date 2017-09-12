@@ -1,4 +1,4 @@
-package org.jy.web.controller;
+package org.jy.controller;
 
 import com.alibaba.fastjson.JSON;
 import org.jy.base.util.email.EmailSender;

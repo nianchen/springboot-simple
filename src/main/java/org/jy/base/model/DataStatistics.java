@@ -1,7 +1,7 @@
 package org.jy.base.model;
 
-import java.util.Date;
 import javax.persistence.*;
+import java.util.Date;
 
 @Table(name = "data_statistics")
 public class DataStatistics {

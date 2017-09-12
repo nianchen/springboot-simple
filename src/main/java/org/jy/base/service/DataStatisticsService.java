@@ -16,4 +16,9 @@ public class DataStatisticsService {
         PageHelper.startPage(249,10);
         return dataStatisticsMapper.selectAll();
     }
+
+
+    public Integer getTotal(){
+        return dataStatisticsMapper.getTotal();
+    }
 }

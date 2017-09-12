@@ -38,7 +38,7 @@
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
         <!-- 配置mybatis xml 文件-->
-        <sqlMapGenerator targetPackage="mapping" targetProject="src/main/resources"/>
+        <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources"/>
 
         <!-- 配置java mapper 接口-->
         <javaClientGenerator targetPackage="org.jy.base.mapper" targetProject="src/main/java" type="XMLMAPPER"/>

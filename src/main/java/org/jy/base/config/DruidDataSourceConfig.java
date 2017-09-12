@@ -1,4 +1,4 @@
-package org.jy.base.config.DataBase;
+package org.jy.base.config;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.support.http.StatViewServlet;
@@ -6,17 +6,15 @@ import com.alibaba.druid.support.http.WebStatFilter;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
@@ -62,6 +60,12 @@ public class DruidDataSourceConfig {
     @Value("${spring.datasource.connectionProperties}")
     private String connectionProperties;
 
+    @Value("${mybatis.mapper-locations}")
+    private String mapperLocations;
+    @Value("${mybatis.type-aliases-package}")
+    private String typeAliasesPackage;
+
+
     @Bean(name = "dataSource_druid")     //声明其为Bean实例
     @Primary  //在同样的DataSource中，首先使用被标注的DataSource
     public DataSource dataSource() {
@@ -93,16 +97,30 @@ public class DruidDataSourceConfig {
     }
 
     @Bean(name = "sqlSessionFactory")
-    public SqlSessionFactory sqlSessionFactoryBean(@Qualifier("dataSource_druid") DataSource dataSource) {
-        SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
-        bean.setDataSource(dataSource);
-        try {
-            return bean.getObject();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
+    public SqlSessionFactory sqlSessionFactoryBean(@Qualifier("dataSource_druid") DataSource dataSource) throws Exception {
+        SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
+        sqlSessionFactoryBean.setDataSource(dataSource);
+        sqlSessionFactoryBean.setTypeAliasesPackage(typeAliasesPackage);
+        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+        sqlSessionFactoryBean.setMapperLocations(resolver.getResources(mapperLocations));
+        return sqlSessionFactoryBean.getObject();
     }
+    /*@Bean
+    public PageHelper pageHelper() {
+        PageHelper pageHelper = new PageHelper();
+        Properties p = new Properties();
+        p.setProperty("offsetAsPageNum", "true");
+        p.setProperty("rowBoundsWithCount", "true");
+        p.setProperty("reasonable", "true");
+        p.setProperty("helperDialect", "mysql");
+        p.setProperty("reasonable", "false");
+        p.setProperty("supportMethodsArguments", "true");
+        p.setProperty("returnPageInfo", "check");
+        p.setProperty("params", "count=countSql");
+        pageHelper.setProperties(p);
+        return pageHelper;
+    }*/
+
 
     @Bean
     public SqlSessionTemplate sqlSessionTemplate(SqlSessionFactory sqlSessionFactory) {
